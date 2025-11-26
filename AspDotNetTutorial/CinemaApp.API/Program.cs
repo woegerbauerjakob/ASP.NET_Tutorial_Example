@@ -1,6 +1,10 @@
 
+using AutoMapper;
+using CinemaApp.API.Mappings;
 using CinemaApp.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace CinemaApp.API
 {
@@ -9,6 +13,15 @@ namespace CinemaApp.API
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            // --- START: The New AutoMapper Setup ---
+            var mapperConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MappingProfile());
+            }, NullLoggerFactory.Instance);
+
+            IMapper mapper = mapperConfig.CreateMapper();
+            builder.Services.AddSingleton(mapper);
 
             // Add services to the container.
 
