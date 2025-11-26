@@ -4,7 +4,10 @@ using System.Text;
 
 namespace CinemaApp.Shared
 {
-    internal class ShowtimeDto
+    public class ShowtimeDto
     {
+        public int Id { get; set; }
+        public DateTime StartTime { get; set; }
+        public decimal TicketPrice { get; set; }
     }
 }
