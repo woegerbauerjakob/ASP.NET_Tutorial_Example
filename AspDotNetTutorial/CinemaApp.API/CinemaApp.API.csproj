@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CinemaApp.Data\CinemaApp.Data.csproj" />
     <ProjectReference Include="..\CinemaApp.Domain\CinemaApp.Domain.csproj" />
+    <ProjectReference Include="..\CinemaApp.Shared\CinemaApp.Shared.csproj" />
   </ItemGroup>
 
 </Project>
