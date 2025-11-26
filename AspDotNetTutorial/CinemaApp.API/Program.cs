@@ -1,4 +1,7 @@
 
+using CinemaApp.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace CinemaApp.API
 {
     public class Program
@@ -8,6 +11,12 @@ namespace CinemaApp.API
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+            builder.Services.AddDbContext<CinemaDbContext>(options =>
+                options.UseSqlServer(connectionString,
+                    b => b.MigrationsAssembly("CinemaApp.Data")));
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
