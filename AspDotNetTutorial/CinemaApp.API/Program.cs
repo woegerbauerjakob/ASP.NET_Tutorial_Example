@@ -19,11 +19,14 @@ namespace CinemaApp.API
             {
                 mc.AddProfile(new MappingProfile());
             }, NullLoggerFactory.Instance);
-
+    
             IMapper mapper = mapperConfig.CreateMapper();
             builder.Services.AddSingleton(mapper);
 
             // Add services to the container.
+
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -43,11 +46,8 @@ namespace CinemaApp.API
                 DbSeeder.Seed(dbContext);
             }
 
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.MapOpenApi();
-            }
+            app.UseSwagger();
+            app.UseSwaggerUI();
 
             app.UseHttpsRedirection();
 

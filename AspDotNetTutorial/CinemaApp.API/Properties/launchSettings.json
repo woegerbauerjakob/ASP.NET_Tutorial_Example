@@ -18,6 +18,16 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
+    },
+    "CinemaApp.API": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true, // <--- Make sure this is true
+      "launchUrl": "swagger", // <--- Make sure this says "swagger"
+      "applicationUrl": "https://localhost:7153;http://localhost:5153",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
     }
   }
 }
