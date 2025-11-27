@@ -1,6 +1,10 @@
 
+using AutoMapper;
+using CinemaApp.API.Mappings;
 using CinemaApp.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace CinemaApp.API
 {
@@ -10,7 +14,19 @@ namespace CinemaApp.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // --- START: The New AutoMapper Setup ---
+            var mapperConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MappingProfile());
+            }, NullLoggerFactory.Instance);
+    
+            IMapper mapper = mapperConfig.CreateMapper();
+            builder.Services.AddSingleton(mapper);
+
             // Add services to the container.
+
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -30,11 +46,8 @@ namespace CinemaApp.API
                 DbSeeder.Seed(dbContext);
             }
 
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.MapOpenApi();
-            }
+            app.UseSwagger();
+            app.UseSwaggerUI();
 
             app.UseHttpsRedirection();
 

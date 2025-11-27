@@ -3,4 +3,5 @@
   <Project Path="CinemaApp.Client/CinemaApp.Client.csproj" />
   <Project Path="CinemaApp.Data/CinemaApp.Data.csproj" />
   <Project Path="CinemaApp.Domain/CinemaApp.Domain.csproj" />
+  <Project Path="CinemaApp.Shared/CinemaApp.Shared.csproj" Id="2997461b-c701-433e-8c68-5148974ad3a9" />
 </Solution>
