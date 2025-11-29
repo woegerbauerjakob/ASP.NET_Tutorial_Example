@@ -1,11 +1,13 @@
 ﻿using CinemaApp.Domain;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 
 namespace CinemaApp.Data
 {
-    public class CinemaDbContext : DbContext
+    public class CinemaDbContext : IdentityDbContext<IdentityUser>
     {
         // Constructor: Passes configuration (like connection strings) to the base class
         public CinemaDbContext(DbContextOptions<CinemaDbContext> options) : base(options)
