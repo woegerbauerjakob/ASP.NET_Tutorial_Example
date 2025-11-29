@@ -1,0 +1,139 @@
+﻿@page "/admin"
+@using CinemaApp.Shared
+@using System.Net.Http.Headers
+@using System.Text.Json
+@inject HttpClient Http
+
+<PageTitle>Admin Dashboard</PageTitle>
+
+<div class="container mt-4">
+    <h1>Admin Dashboard</h1>
+
+    @if (string.IsNullOrEmpty(jwtToken))
+    {
+        <div class="card p-4 shadow-sm" style="max-width: 400px;">
+            <h3>Login</h3>
+            <div class="mb-3">
+                <label>Email</label>
+                <input @bind="loginModel.Email" class="form-control" placeholder="admin@cinema.com" />
+            </div>
+            <div class="mb-3">
+                <label>Password</label>
+                <input @bind="loginModel.Password" type="password" class="form-control" placeholder="Password123!" />
+            </div>
+            <button class="btn btn-primary w-100" @onclick="Login">Login</button>
+            <p class="text-danger mt-2">@loginMessage</p>
+        </div>
+    }
+    else
+    {
+        <div class="card p-4 shadow-sm">
+            <h3>Add New Movie</h3>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Title</label>
+                        <input @bind="newMovie.Title" class="form-control" placeholder="e.g. Inception" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea @bind="newMovie.Description" class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card bg-light p-3">
+                        <h5>Add Showtimes</h5>
+                        <div class="d-flex gap-2 mb-2">
+                            <input @bind="tempShowtime.StartTime" type="datetime-local" class="form-control" />
+                            <input @bind="tempShowtime.TicketPrice" type="number" class="form-control" placeholder="Price" style="width: 100px;" />
+                            <button class="btn btn-secondary" @onclick="AddShowtimeToList">Add</button>
+                        </div>
+
+                        <ul class="list-group">
+                            @foreach (var show in newMovie.Showtimes)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>@show.StartTime.ToString("g") - $@show.TicketPrice</span>
+                                    <button class="btn btn-sm btn-danger" @onclick="() => newMovie.Showtimes.Remove(show)">X</button>
+                                </li>
+                            }
+                            @if (newMovie.Showtimes.Count == 0)
+                            {
+                                <li class="list-group-item text-muted">No showtimes added yet.</li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <hr />
+            <button class="btn btn-success btn-lg" @onclick="CreateMovie">Save Movie & Showtimes</button>
+            <p class="mt-2 fw-bold @(isSuccess ? "text-success" : "text-danger")">@createMessage</p>
+        </div>
+    }
+</div>
+
+@code {
+    // State
+    private string jwtToken = "";
+    private string loginMessage = "";
+    private string createMessage = "";
+    private bool isSuccess = false;
+
+    // Models
+    private UserLoginDto loginModel = new();
+    private MovieDto newMovie = new();
+
+    // Temporary object for the inputs
+    private ShowtimeDto tempShowtime = new() { StartTime = DateTime.Now, TicketPrice = 12 };
+
+    private async Task Login()
+    {
+        var response = await Http.PostAsJsonAsync("api/Auth/login", loginModel);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var result = await response.Content.ReadFromJsonAsync<JsonElement>();
+            jwtToken = result.GetProperty("token").GetString()!;
+            loginMessage = "";
+        }
+        else
+        {
+            loginMessage = "Login failed. Check credentials.";
+        }
+    }
+
+    private void AddShowtimeToList()
+    {
+        // Add a COPY of the temp object to the list
+        newMovie.Showtimes.Add(new ShowtimeDto
+        {
+            StartTime = tempShowtime.StartTime,
+            TicketPrice = tempShowtime.TicketPrice
+        });
+    }
+
+    private async Task CreateMovie()
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post, "api/Movies");
+        request.Content = JsonContent.Create(newMovie);
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwtToken);
+
+        var response = await Http.SendAsync(request);
+
+        if (response.IsSuccessStatusCode)
+        {
+            isSuccess = true;
+            createMessage = "Success! Movie and Showtimes created.";
+            newMovie = new MovieDto(); // Reset form
+            newMovie.Showtimes = new List<ShowtimeDto>(); // Reset list
+        }
+        else
+        {
+            isSuccess = false;
+            createMessage = $"Error: {response.StatusCode}";
+        }
+    }
+}

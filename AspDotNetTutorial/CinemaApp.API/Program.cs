@@ -2,9 +2,13 @@
 using AutoMapper;
 using CinemaApp.API.Mappings;
 using CinemaApp.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace CinemaApp.API
 {
@@ -45,6 +49,37 @@ namespace CinemaApp.API
                 options.UseSqlServer(connectionString,
                     b => b.MigrationsAssembly("CinemaApp.Data")));
 
+
+
+            // 1. Register Identity (Users & Roles)
+            builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<CinemaDbContext>()
+                .AddDefaultTokenProviders();
+
+            // 2. Register Authentication (JWT)
+            var jwtSettings = builder.Configuration.GetSection("Jwt");
+            var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]!);
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtSettings["Issuer"],
+                    ValidAudience = jwtSettings["Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(key)
+                };
+            });
+
+
+
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
@@ -61,6 +96,12 @@ namespace CinemaApp.API
             app.UseSwaggerUI();
 
             app.UseCors("AllowAll");
+
+            app.UseCors("AllowAll"); // We added this earlier
+
+            // CRITICAL: Order matters! Auth must come before Authorization.
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseHttpsRedirection();
 
