@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using CinemaApp.Data;
+using CinemaApp.Domain;
 using CinemaApp.Shared;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -53,6 +55,24 @@ namespace CinemaApp.API.Controllers
             var movieDto = _mapper.Map<MovieDto>(movie);
 
             return Ok(movieDto);
+        }
+
+        // POST: api/movies
+        [HttpPost]
+        [Authorize] 
+        public async Task<ActionResult<MovieDto>> CreateMovie(MovieDto movieDto)
+        {
+            // 1. Map DTO -> Domain Entity
+            var movie = _mapper.Map<Movie>(movieDto);
+
+            // 2. Add to DB
+            _context.Movies.Add(movie);
+            await _context.SaveChangesAsync();
+
+            // 3. Map back to DTO for response
+            var returnDto = _mapper.Map<MovieDto>(movie);
+
+            return CreatedAtAction(nameof(GetMovie), new { id = returnDto.Id }, returnDto);
         }
     }
 }
