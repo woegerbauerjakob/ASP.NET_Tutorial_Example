@@ -28,6 +28,17 @@ namespace CinemaApp.API
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", policy =>
+                {
+                    policy.AllowAnyOrigin()  // Allows Blazor (on any port) to connect
+                          .AllowAnyMethod()  // Allows GET, POST, PUT, etc.
+                          .AllowAnyHeader();
+                });
+            });
+
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
             builder.Services.AddDbContext<CinemaDbContext>(options =>
@@ -48,6 +59,8 @@ namespace CinemaApp.API
 
             app.UseSwagger();
             app.UseSwaggerUI();
+
+            app.UseCors("AllowAll");
 
             app.UseHttpsRedirection();
 

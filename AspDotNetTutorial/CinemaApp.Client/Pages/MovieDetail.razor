@@ -1,0 +1,68 @@
+﻿@page "/movie/{id:int}"
+@using CinemaApp.Shared
+@inject HttpClient Http
+
+<PageTitle>Movie Details</PageTitle>
+
+@if (movie == null)
+{
+    <div class="alert alert-info">Loading details...</div>
+}
+else
+{
+    <div class="container mt-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="card-title">@movie.Title</h2>
+                <p class="card-text text-muted">@movie.Description</p>
+                <a href="/" class="btn btn-outline-secondary">← Back to List</a>
+            </div>
+        </div>
+
+        <h3>Showtimes</h3>
+        @if (movie.Showtimes == null || !movie.Showtimes.Any())
+        {
+            <p>No showtimes available.</p>
+        }
+        else
+        {
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Price</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var show in movie.Showtimes)
+                    {
+                        <tr>
+                            <td>@show.StartTime.ToLocalTime().ToString("MMM dd, yyyy")</td>
+                            <td>@show.StartTime.ToLocalTime().ToString("HH:mm")</td>
+
+                            <td>$@show.TicketPrice.ToString("F2")</td>
+                            <td>
+                                <button class="btn btn-success btn-sm">Buy Ticket</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private MovieDto? movie;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Fetch the specific movie (including showtimes) by ID
+        movie = await Http.GetFromJsonAsync<MovieDto>($"api/movies/{Id}");
+    }
+}

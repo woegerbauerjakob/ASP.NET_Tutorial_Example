@@ -1,0 +1,31 @@
+﻿@using CinemaApp.Shared
+
+<div class="card h-100" style="width: 18rem;">
+    <img src="https://via.placeholder.com/286x180?text=Cinema+Movie" class="card-img-top" alt="...">
+
+    <div class="card-body">
+        <h5 class="card-title">@Movie.Title</h5>
+        <p class="card-text">@ShortDescription</p>
+
+        <a href="/movie/@Movie.Id" class="btn btn-primary">
+            View Showtimes
+        </a>
+    </div>
+</div>
+
+@code {
+    // [Parameter] means "Parent, please pass this data to me!"
+    [Parameter]
+    public MovieDto Movie { get; set; } = new();
+
+    // Helper to truncate long descriptions
+    public string ShortDescription
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(Movie.Description)) return "";
+            if (Movie.Description.Length > 50) return Movie.Description.Substring(0, 50) + "...";
+            return Movie.Description;
+        }
+    }
+}
