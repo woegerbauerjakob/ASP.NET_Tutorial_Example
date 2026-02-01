@@ -123,7 +123,7 @@ namespace CinemaApp.Domain
 * Click on the **Browse** tab in the top left.
 
 **2. Install `Microsoft.EntityFrameworkCore`**
-* Search for: `Microsoft.EntityFrameworkCore.SqlServer`
+* Search for: `Microsoft.EntityFrameworkCore`
 * Click on it in the list.
 * Check the box for **`CinemaApp.Data`** and **`CinemaApp.API`**.
 * Click **Install** (and Accept any license prompts).
@@ -424,7 +424,7 @@ Now we need to teach the API how to automatically copy data from your Database E
 **1. Install the AutoMapper Package**
 
   * Right-click **`CinemaApp.API`** -\> **Manage NuGet Packages**.
-  * Search for: `AutoMapper.Extensions.Microsoft.DependencyInjection`
+  * Search for: `AutoMapper`
   * Click **Install**.
 
 **2. Create the Mapping Profile**
@@ -586,7 +586,7 @@ We also need to add a new launchConfig in the CinameApp.API/Properties/launchSet
   "dotnetRunMessages": true,
   "launchBrowser": true,
   "launchUrl": "swagger",
-  "applicationUrl": "https://localhost:7153;http://localhost:5153",
+  "applicationUrl": "https://localhost:7000;http://localhost:5153",
   "environmentVariables": {
     "ASPNETCORE_ENVIRONMENT": "Development"
   }
@@ -903,7 +903,12 @@ We need to upgrade our database to handle Users, Passwords, and Roles. Microsoft
   * Search for: `Microsoft.AspNetCore.Identity.EntityFrameworkCore`.
   * Click **Install**.
 
-**2. Update the DbContext**
+**2. Install the Identity Package**
+  * Right-click **`CinemaApp.Data`** -\> **Manage NuGet Packages**.
+  * Search for: `Microsoft.AspNetCore.Identity`.
+  * Click **Install**.
+
+**3. Update the DbContext**
   * Open `CinemaDbContext.cs` in **`CinemaApp.Data`**.
   * Change the inheritance from `DbContext` to `IdentityDbContext<IdentityUser>`.
   * *Note:* You will need to add a specific `using` statement for this to work.
@@ -973,8 +978,8 @@ We need to tell the API to use the Identity system we just added to the database
   "ConnectionStrings": { ... },
   "Jwt": {
     "Key": "ThisIsMySuperSecretKeyForCinemaApp2024!",
-    "Issuer": "https://localhost:7153",
-    "Audience": "https://localhost:7153"
+    "Issuer": "https://localhost:7000",
+    "Audience": "https://localhost:7000"
   },
   "Logging": { ... }
 }
@@ -1190,7 +1195,7 @@ Before we secure the API, we need to make sure we can actually create users and 
 **1. Run the App**
 
   * Press **F5** to start the project.
-  * Go to the API Swagger page (e.g., `https://localhost:7153/swagger`).
+  * Go to the API Swagger page (e.g., `https://localhost:7000/swagger`).
 
 **2. Register a User**
 
@@ -1392,7 +1397,7 @@ Now we want to link the Admin Page on the Sidebar and also add Showtimes
 
 **Step 1: Add the Link to the Navigation Menu**
 
-Open **`Shared/NavMenu.razor`** in the **Client** project.
+Open **`Layout/NavMenu.razor`** in the **Client** project.
 
 Add this block inside the `<nav>` section (usually at the bottom of the list):
 
