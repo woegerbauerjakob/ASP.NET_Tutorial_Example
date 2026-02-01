@@ -1,4 +1,4 @@
-# 0 Overview
+# Overview
 
 Welcome to this comprehensive tutorial on developing a Cinema Management Application using ASP.NET Core. This course is structured to take you through the full development lifecycle, focusing on backend architecture, data persistence, and modern frontend integration.
 
